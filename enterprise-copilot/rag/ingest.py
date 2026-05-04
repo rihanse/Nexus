@@ -51,7 +51,7 @@ def _load_documents(docs_dir: str) -> list:
     all_docs = []
     path = Path(docs_dir)
     if not path.exists():
-        print(f"⚠️  Docs directory not found: {docs_dir}")
+        print(f"[WARN] Docs directory not found: {docs_dir}")
         return all_docs
 
     for fp in path.iterdir():
@@ -59,17 +59,17 @@ def _load_documents(docs_dir: str) -> list:
             try:
                 docs = TextLoader(str(fp), encoding="utf-8").load()
                 all_docs.extend(docs)
-                print(f"  📄 Loaded TXT: {fp.name}")
+                print(f"  [OK] Loaded TXT: {fp.name}")
             except Exception as e:
-                print(f"  ❌ {fp.name}: {e}")
+                print(f"  [ERR] {fp.name}: {e}")
         elif fp.suffix.lower() == ".pdf":
             try:
                 from langchain_community.document_loaders import PyPDFLoader
                 docs = PyPDFLoader(str(fp)).load()
                 all_docs.extend(docs)
-                print(f"  📄 Loaded PDF: {fp.name} ({len(docs)} pages)")
+                print(f"  [OK] Loaded PDF: {fp.name} ({len(docs)} pages)")
             except Exception as e:
-                print(f"  ❌ {fp.name}: {e}")
+                print(f"  [ERR] {fp.name}: {e}")
 
     return all_docs
 
@@ -82,15 +82,15 @@ def ingest_documents(docs_dir: str = DOCS_DIR, index_dir: str = FAISS_INDEX_DIR)
         docs_dir: Directory containing .txt and .pdf policy documents.
         index_dir: Directory to save the FAISS index.
     """
-    print(f"\n🔄 Starting ingestion from: {docs_dir}")
+    print(f"\n[INFO] Starting ingestion from: {docs_dir}")
     raw_docs = _load_documents(docs_dir)
     if not raw_docs:
-        print("❌ No documents found. Skipping ingestion.")
+        print("[WARN] No documents found. Skipping ingestion.")
         return
 
     splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     chunks = splitter.split_documents(raw_docs)
-    print(f"  ✂️  {len(chunks)} chunks created.")
+    print(f"  [INFO] {len(chunks)} chunks created.")
 
     # Tag each chunk with RBAC metadata
     for chunk in chunks:
@@ -101,7 +101,7 @@ def ingest_documents(docs_dir: str = DOCS_DIR, index_dir: str = FAISS_INDEX_DIR)
         chunk.metadata["department"] = meta["department"]
         chunk.metadata["access_roles"] = json.dumps(meta["access_roles"])
 
-    print("  🤖 Loading embedding model (first run downloads ~90MB)...")
+    print("  [INFO] Loading embedding model (first run downloads ~90MB)...")
     embeddings = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
@@ -118,7 +118,7 @@ def ingest_documents(docs_dir: str = DOCS_DIR, index_dir: str = FAISS_INDEX_DIR)
     with open(meta_path, "wb") as f:
         pickle.dump([c.metadata for c in chunks], f)
 
-    print(f"✅ Ingestion complete! {len(chunks)} chunks indexed and saved to '{index_dir}'.\n")
+    print(f"[OK] Ingestion complete! {len(chunks)} chunks indexed and saved to '{index_dir}'.\n")
 
 
 if __name__ == "__main__":

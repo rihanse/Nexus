@@ -1,6 +1,6 @@
 """
 Router Agent — main LangGraph supervisor that classifies intent and routes to domain agents.
-Gemini-compatible version.
+Groq-compatible version. Prompts live in agents/prompts/router_prompts.py.
 """
 import os
 from typing import Literal
@@ -15,6 +15,7 @@ import agents.finance_agent as finance_agent
 import agents.hr_agent as hr_agent
 import agents.it_agent as it_agent
 from agents.approval_agent import approval_manager
+from agents.prompts import INTENT_DETECTION_PROMPT_TEMPLATE
 from agents.state import AgentState
 from db.database import SessionLocal
 
@@ -66,20 +67,9 @@ def _detect_intent_node(state: AgentState) -> AgentState:
     
     # We use a single HumanMessage with the instructions + the user query.
     # This is the safest way to avoid 'contents is not specified' errors.
-    prompt = (
-        "Instructions: Classify the user message into exactly ONE category: "
-        f"{', '.join(INTENT_LABELS)}.\n\n"
-        "Categories:\n"
-        "- hr_policy: general HR rules/docs\n"
-        "- hr_leave: leave requests/balance\n"
-        "- it_ticket: support issues\n"
-        "- it_asset: hardware/software requests\n"
-        "- finance_payslip: salary questions\n"
-        "- finance_reimbursement: expenses\n"
-        "- finance_tax: taxes/PF\n"
-        "- unknown: anything else\n\n"
-        f"User message: \"{last_user_msg}\"\n\n"
-        "Respond only with the label."
+    prompt = INTENT_DETECTION_PROMPT_TEMPLATE.format(
+        intent_labels=", ".join(INTENT_LABELS),
+        user_message=last_user_msg,
     )
     
     try:
@@ -90,7 +80,7 @@ def _detect_intent_node(state: AgentState) -> AgentState:
         return {**state, "intent": intent}
     except Exception as e:
         # If Gemini fails, we default to unknown instead of crashing the whole graph
-        print(f"⚠️ Gemini Intent Detection Failed: {e}")
+        print(f"[WARN] Intent Detection Failed: {e}")
         return {**state, "intent": "unknown", "error": f"Intent detection error: {str(e)}"}
 
 def _validate_role_node(state: AgentState) -> AgentState:
@@ -132,11 +122,47 @@ def build_router_graph() -> StateGraph:
     graph.add_edge("format_response", END)
     return graph.compile()
 
+import ast
+from agents.approval_agent import approval_manager
+from db.database import SessionLocal
+import db.crud as crud
+
 def _format_response_node(state: AgentState) -> AgentState:
     res = state.get("final_response", "")
     if not res:
         res = "I couldn't process that. Please try rephrasing."
-    return {**state, "final_response": res}
+    
+    # Check for approvals triggered in tool messages
+    requires_approval = False
+    for m in state.get("messages", []):
+        if getattr(m, "type", "") == "tool":
+            try:
+                # Tools often return stringified dicts
+                data = ast.literal_eval(m.content)
+                if isinstance(data, dict) and data.get("requires_approval"):
+                    # Check for various ID keys used by different tools
+                    req_id = data.get("request_id") or data.get("reimbursement_id") or data.get("ticket_id") or data.get("leave_id")
+                    name = getattr(m, "name", "")
+                    atype = "leave" if "leave" in name else "asset" if "asset" in name else "reimbursement" if "reimb" in name else "unknown"
+                    
+                    if req_id:
+                        db = SessionLocal()
+                        user = crud.get_user_by_id(db, state["user_id"])
+                        manager_id = user.manager_id if user and user.manager_id else state["user_id"]
+                        
+                        approval_manager.create_pending_approval(
+                            request_type=atype,
+                            request_id=req_id,
+                            employee_id=state["user_id"],
+                            approver_id=manager_id,
+                            db=db
+                        )
+                        db.close()
+                        requires_approval = True
+            except Exception:
+                pass
+
+    return {**state, "final_response": res, "requires_approval": requires_approval}
 
 router_graph = build_router_graph()
 

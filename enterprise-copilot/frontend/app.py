@@ -229,12 +229,10 @@ def render_hr_policy():
 
 def render_approvals():
     st.markdown("## ⚖️ Pending Approvals")
-    try:
-        import sys, os as _os
-        sys.path.insert(0, _os.path.dirname(_os.path.dirname(__file__)))
-        from agents.approval_agent import approval_manager as am
-        pending = am.get_pending_approvals(st.session_state.user_info["id"])
-    except Exception:
+    r = api_get("/approvals/pending")
+    if r["ok"]:
+        pending = r["data"].get("pending", [])
+    else:
         pending = []
 
     if not pending:

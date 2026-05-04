@@ -2,6 +2,15 @@
 FastAPI application — Enterprise Multi-Agent AI Copilot.
 """
 import os
+import sys
+
+# Patch SSL certificates for corporate proxies on Windows
+try:
+    import certifi_win32.bootstrapping
+    certifi_win32.bootstrapping.bootstrap()
+except ImportError:
+    pass
+
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
@@ -38,9 +47,14 @@ async def lifespan(app: FastAPI):
         db.close()
     try:
         from rag.ingest import ingest_documents
-        ingest_documents()
+        index_path = os.path.join(os.getenv("FAISS_INDEX_DIR", "./faiss_index"), "index.faiss")
+        if not os.path.exists(index_path):
+            print("[INFO] No FAISS index found. Running initial ingestion...")
+            ingest_documents()
+        else:
+            print("[INFO] FAISS index found. Skipping ingestion.")
     except Exception as e:
-        print(f"⚠️  RAG ingestion skipped: {e}")
+        print(f"[WARN] RAG ingestion failed: {e}")
     yield
     print("Enterprise Copilot shutting down.")
 
@@ -165,6 +179,13 @@ def apply_leave(request: LeaveApplyRequest, current_user: User = Depends(get_cur
 
 
 # ── Approvals ─────────────────────────────────
+@app.get("/approvals/pending", tags=["Approvals"])
+def get_pending_approvals(current_user: User = Depends(get_current_user)):
+    """Get all pending approvals assigned to the current user."""
+    pending = approval_manager.get_pending_approvals(current_user.id)
+    return {"pending": pending}
+
+
 @app.post("/approve/{request_id}", tags=["Approvals"])
 def process_approval(request_id: int, body: ApprovalRequest,
                      current_user: User = Depends(require_role("manager", "hr_team", "it_team", "finance_team", "admin")),

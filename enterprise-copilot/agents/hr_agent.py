@@ -1,6 +1,7 @@
 """
 HR Agent — ReAct-style LangGraph agent for HR queries and leave management.
-Gemini-compatible: no SystemMessage, context injected into HumanMessage.
+Groq-compatible: no SystemMessage, context injected into HumanMessage.
+Prompts live in agents/prompts/hr_prompts.py.
 """
 import os
 from dotenv import load_dotenv
@@ -9,6 +10,7 @@ from langchain_groq import ChatGroq
 from langgraph.prebuilt import create_react_agent
 from langsmith import traceable
 
+from agents.prompts import HR_SYSTEM_PROMPT
 from agents.state import AgentState
 from tools.hr_tools import (
     apply_leave,
@@ -21,11 +23,6 @@ from tools.hr_tools import (
 )
 
 load_dotenv()
-
-HR_SYSTEM_PROMPT = (
-    "You are the HR Assistant. Help with policies, leave, and queries. "
-    "Confirm leave details before submitting. Professionally handle requests."
-)
 
 def _get_hr_agent():
     llm = ChatGroq(

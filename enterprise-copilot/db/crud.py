@@ -212,6 +212,22 @@ def get_leave_balance(
     )
 
 
+def get_all_leave_balances(
+    db: Session, employee_id: int, year: Optional[int] = None
+) -> list[LeaveBalance]:
+    """Return all leave balances for a specific employee and year."""
+    if year is None:
+        year = datetime.datetime.utcnow().year
+    return (
+        db.query(LeaveBalance)
+        .filter(
+            LeaveBalance.employee_id == employee_id,
+            LeaveBalance.year == year,
+        )
+        .all()
+    )
+
+
 def update_leave_balance(
     db: Session, employee_id: int, leave_type: str, days_used: int, year: Optional[int] = None
 ) -> Optional[LeaveBalance]:

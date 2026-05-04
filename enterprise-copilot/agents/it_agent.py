@@ -1,6 +1,6 @@
 """
 IT Agent — ReAct-style LangGraph agent for IT support.
-Gemini-compatible.
+Groq-compatible. Prompts live in agents/prompts/it_prompts.py.
 """
 import os
 from dotenv import load_dotenv
@@ -9,6 +9,7 @@ from langchain_groq import ChatGroq
 from langgraph.prebuilt import create_react_agent
 from langsmith import traceable
 
+from agents.prompts import IT_SYSTEM_PROMPT
 from agents.state import AgentState
 from tools.it_tools import (
     assign_ticket, check_known_outages, create_ticket, get_all_tickets,
@@ -16,8 +17,6 @@ from tools.it_tools import (
 )
 
 load_dotenv()
-
-IT_SYSTEM_PROMPT = "You are the IT Support Assistant. Help with tickets, issues, and assets. Check outages first."
 
 def _get_it_agent():
     llm = ChatGroq(

@@ -63,3 +63,5 @@ def require_role(*allowed_roles: str):
                 detail=f"Access denied. Required role(s): {', '.join(allowed_roles)}. Your role: {current_user.role}.",
             )
         return current_user
+
+    return _dependency

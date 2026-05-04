@@ -26,30 +26,43 @@ def _count_working_days(start: datetime.date, end: datetime.date) -> int:
     return total
 
 
+from typing import Optional
+
 @tool
-def get_leave_balance(user_id: int, leave_type: str) -> str:
+def get_leave_balance(user_id: int, leave_type: str = "all") -> str:
     """
-    Get leave balance for a specific employee and leave type.
+    Get leave balance for a specific employee.
 
     Args:
         user_id: Employee DB ID.
-        leave_type: casual, sick, or annual.
+        leave_type: casual, sick, annual, or all. Defaults to "all".
 
     Returns:
         Formatted leave balance string.
     """
     db = _get_db()
     try:
-        balance = crud.get_leave_balance(db, user_id, leave_type)
-        if not balance:
-            return f"No leave balance found for '{leave_type}'. Please contact HR."
-        return (
-            f"Leave Balance — {leave_type.title()}:\n"
-            f"  Total Allowed : {balance.total_allowed} days\n"
-            f"  Used          : {balance.used} days\n"
-            f"  Remaining     : {balance.remaining} days\n"
-            f"  Year          : {balance.year}"
-        )
+        print(f"[TOOL] get_leave_balance called for user_id={user_id}, leave_type={leave_type}")
+        if leave_type.lower() != "all":
+            balance = crud.get_leave_balance(db, user_id, leave_type.lower())
+            if not balance:
+                return f"No leave balance found for '{leave_type}'. Please contact HR."
+            return (
+                f"Leave Balance — {leave_type.title()}:\n"
+                f"  Total Allowed : {balance.total_allowed} days\n"
+                f"  Used          : {balance.used} days\n"
+                f"  Remaining     : {balance.remaining} days\n"
+                f"  Year          : {balance.year}"
+            )
+        else:
+            # Return all balances
+            balances = crud.get_all_leave_balances(db, user_id)
+            if not balances:
+                return "No leave balances found. Please contact HR."
+            lines = ["Your Leave Balances:"]
+            for b in balances:
+                lines.append(f"  - {b.leave_type.title()}: {b.remaining} days remaining (out of {b.total_allowed})")
+            return "\n".join(lines)
     finally:
         db.close()
 
@@ -94,7 +107,7 @@ def apply_leave(user_id: int, leave_type: str, start_date: str, end_date: str, r
             if bal.remaining < total_days:
                 return {"success": False, "message": f"Insufficient balance. Remaining: {bal.remaining}, Requested: {total_days}.", "requires_approval": False}
         req = crud.create_leave_request(db, user_id, leave_type, s, e, total_days, reason)
-        requires_approval = total_days > 3
+        requires_approval = total_days > 0
         return {
             "success": True,
             "request_id": req.id,

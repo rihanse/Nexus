@@ -1,6 +1,6 @@
 """
 Finance Agent — ReAct-style LangGraph agent for finance support.
-Gemini-compatible.
+Groq-compatible. Prompts live in agents/prompts/finance_prompts.py.
 """
 import os
 from dotenv import load_dotenv
@@ -9,14 +9,13 @@ from langchain_groq import ChatGroq
 from langgraph.prebuilt import create_react_agent
 from langsmith import traceable
 
+from agents.prompts import FINANCE_SYSTEM_PROMPT
 from agents.state import AgentState
 from tools.finance_tools import (
     get_latest_payslip, get_reimbursement_status, get_tax_info, submit_reimbursement,
 )
 
 load_dotenv()
-
-FINANCE_SYSTEM_PROMPT = "You are the Finance Assistant. Help with payslips, taxes, and reimbursements. Be precise."
 
 def _get_finance_agent():
     llm = ChatGroq(

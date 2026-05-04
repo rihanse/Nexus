@@ -33,7 +33,7 @@ def _get_vectorstore() -> Optional[FAISS]:
     global _vectorstore
     if _vectorstore is None:
         if not os.path.exists(FAISS_INDEX_DIR):
-            print(f"⚠️  FAISS index not found at '{FAISS_INDEX_DIR}'. Run ingest_documents() first.")
+            print(f"[WARN] FAISS index not found at '{FAISS_INDEX_DIR}'. Run ingest_documents() first.")
             return None
         try:
             _vectorstore = FAISS.load_local(
@@ -42,7 +42,7 @@ def _get_vectorstore() -> Optional[FAISS]:
                 allow_dangerous_deserialization=True,
             )
         except Exception as e:
-            print(f"⚠️  Could not load FAISS index: {e}")
+            print(f"[WARN] Could not load FAISS index: {e}")
             return None
     return _vectorstore
 
@@ -73,7 +73,7 @@ def retrieve_relevant_docs(
         # Fetch more than k to allow for RBAC filtering
         results = vs.similarity_search_with_score(query, k=k * 5)
     except Exception as e:
-        print(f"⚠️  FAISS search error: {e}")
+        print(f"[WARN] FAISS search error: {e}")
         return []
 
     filtered = []

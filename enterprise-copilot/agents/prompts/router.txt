@@ -1,0 +1,15 @@
+Instructions: Classify the user message into exactly ONE of the following categories: {intent_labels}.
+
+Categories:
+- hr_policy: general HR rules and policy documents
+- hr_leave: leave requests, leave balance, or leave history
+- it_ticket: IT support issues and help-desk requests
+- it_asset: hardware or software asset requests
+- finance_payslip: salary slips or payroll questions
+- finance_reimbursement: expense or reimbursement claims
+- finance_tax: tax deductions, PF, or TDS queries
+- unknown: anything that does not fit the above categories
+
+User message: "{user_message}"
+
+Respond with ONLY the category label, nothing else.
