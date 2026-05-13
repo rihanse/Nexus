@@ -1,0 +1,9 @@
+IT Policy Document
+
+Employees can raise IT tickets for laptop issues, VPN problems, Outlook or email issues, printer issues, network access, and software installation.
+Before creating a ticket, the system should check known outages, planned maintenance, and duplicate open tickets.
+IT tickets can be assigned only by IT Team or Admin.
+Only IT Team or Admin can resolve tickets.
+Employees can view only their own tickets.
+Asset requests include laptop, monitor, keyboard, mouse, VPN token, and software license.
+Asset approval flow is Employee Request, Manager Approval, IT Approval, Inventory Validation, and Fulfillment.

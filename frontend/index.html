@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Workplace Buddy</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-shell">
+
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+                </div>
+                <div>
+                    <h1>Workplace Buddy</h1>
+                    <p>Enterprise AI Copilot</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <label for="userSelect">Active User</label>
+                <select id="userSelect"></select>
+            </div>
+
+            <div class="user-card">
+                <p class="label">Employee ID</p>
+                <h3 id="employeeId">-</h3>
+
+                <p class="label">Role</p>
+                <h3 id="employeeRole">-</h3>
+
+                <p class="label">Department</p>
+                <h3 id="employeeDepartment">-</h3>
+            </div>
+
+            <div class="section">
+                <h2>Quick Actions</h2>
+                <button class="quick-btn" data-message="What is the notice period?">Notice Period</button>
+                <button class="quick-btn" data-message="How many casual leaves are allowed?">Casual Leaves</button>
+                <button class="quick-btn" data-message="Check my leave balance">Leave Balance</button>
+                <button class="quick-btn" data-message="I want to apply casual leave on 2026-06-10 because family function">Apply Leave</button>
+                <button class="quick-btn" data-message="Laptop issue high priority laptop is overheating">Raise IT Ticket</button>
+                <button class="quick-btn" data-message="Need monitor for development work">Request Asset</button>
+                <button class="quick-btn" data-message="Submit travel claim of 500 for client meeting">Travel Claim</button>
+            </div>
+        </aside>
+
+        <main class="chat-area">
+            <div class="chat-header">
+                <div>
+                    <p class="eyebrow">Internal Operations Assistant</p>
+                    <h2>How can I help you today?</h2>
+                </div>
+                <div class="status-pill">Live</div>
+            </div>
+
+            <div id="chatMessages" class="chat-messages">
+                <div class="message assistant">
+                    <div class="avatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+                    </div>
+                    <div class="bubble">
+                        <p>
+                            Hi, I am Workplace Buddy. I can help with HR policies, leave requests,
+                            IT tickets, asset requests, and reimbursements.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <input id="messageInput" type="text" placeholder="Ask about leave, IT tickets, assets, finance, or policies...">
+                <button id="sendBtn">Send</button>
+            </div>
+        </main>
+
+        <aside class="insights-panel">
+            <div class="panel-card">
+                <h2>Last Execution</h2>
+
+                <div class="metric">
+                    <span>Intent</span>
+                    <strong id="lastIntent">-</strong>
+                </div>
+
+                <div class="metric">
+                    <span>Agent</span>
+                    <strong id="lastAgent">-</strong>
+                </div>
+
+                <div class="metric">
+                    <span>Tool</span>
+                    <strong id="lastTool">-</strong>
+                </div>
+
+                <div class="metric">
+                    <span>Status</span>
+                    <strong id="lastStatus">-</strong>
+                </div>
+
+                <div class="metric">
+                    <span>Response Time</span>
+                    <strong id="lastTime">-</strong>
+                </div>
+            </div>
+
+            <div class="panel-card logs-card">
+                <div class="logs-header">
+                    <h2>Recent Logs</h2>
+                    <button id="refreshLogsBtn">Refresh</button>
+                </div>
+
+                <div id="logsList" class="logs-list">
+                    <p class="muted">No logs loaded yet.</p>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,397 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+body {
+    font-family: Inter, Segoe UI, Arial, sans-serif;
+    background: #eef2f7;
+    color: #172033;
+}
+
+/* Main app layout */
+.app-shell {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    grid-template-columns: 290px minmax(0, 1fr) 330px;
+    width: 100vw;
+    height: 100dvh;
+    overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+    background: #0f172a;
+    color: white;
+    padding: 24px;
+    height: 100dvh;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 34px;
+}
+
+.brand-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #38bdf8, #6366f1);
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+}
+
+.brand h1 {
+    font-size: 22px;
+    margin: 0;
+}
+
+.brand p {
+    margin: 4px 0 0;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.section {
+    margin-bottom: 24px;
+}
+
+.section label,
+.label {
+    display: block;
+    color: #94a3b8;
+    font-size: 12px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.section h2 {
+    font-size: 14px;
+    color: #cbd5e1;
+    margin: 0 0 12px;
+}
+
+select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #334155;
+    background: #1e293b;
+    color: white;
+    outline: none;
+}
+
+.user-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 20px;
+    padding: 18px;
+    margin-bottom: 24px;
+}
+
+.user-card h3 {
+    margin: 0 0 14px;
+    font-size: 15px;
+}
+
+.quick-btn {
+    width: 100%;
+    border: 1px solid #334155;
+    background: #111827;
+    color: #e5e7eb;
+    padding: 12px 14px;
+    border-radius: 14px;
+    text-align: left;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.quick-btn:hover {
+    background: #2563eb;
+    border-color: #2563eb;
+}
+
+/* Chat center area */
+.chat-area {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    padding: 24px;
+    min-width: 0;
+}
+
+/* Header stays at top */
+.chat-header {
+    background: white;
+    border-radius: 24px;
+    padding: 22px 26px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    margin-bottom: 20px;
+    flex-shrink: 0;
+}
+
+.eyebrow {
+    margin: 0 0 6px;
+    color: #64748b;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.chat-header h2 {
+    margin: 0;
+    font-size: 26px;
+}
+
+.status-pill {
+    background: #dcfce7;
+    color: #15803d;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+/* Only this area scrolls */
+.chat-messages {
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px 4px 20px;
+    scroll-behavior: smooth;
+}
+
+/* Chat messages */
+.message {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.message.user {
+    justify-content: flex-end;
+}
+
+.message.user .bubble {
+    background: #2563eb;
+    color: white;
+    border-bottom-right-radius: 6px;
+}
+
+.message.assistant .bubble {
+    background: white;
+    color: #172033;
+    border-bottom-left-radius: 6px;
+}
+
+.avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 14px;
+    background: #0f172a;
+    color: white;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.message.user .avatar {
+    display: none;
+}
+
+.bubble {
+    max-width: 74%;
+    padding: 14px 16px;
+    border-radius: 18px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+/* Input fixed at bottom of chat-area */
+.input-area {
+    display: flex;
+    gap: 12px;
+    background: white;
+    padding: 14px;
+    border-radius: 22px;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+    margin-top: 12px;
+    z-index: 20;
+    flex-shrink: 0;
+}
+
+.input-area input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    padding: 12px;
+    min-width: 0;
+}
+
+.input-area button {
+    border: none;
+    background: #2563eb;
+    color: white;
+    border-radius: 16px;
+    padding: 0 24px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.input-area button:hover {
+    background: #1d4ed8;
+}
+
+.input-area button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Right panel */
+.insights-panel {
+    padding: 24px 24px 24px 0;
+    height: 100dvh;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.panel-card {
+    background: white;
+    border-radius: 24px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.panel-card h2 {
+    margin: 0 0 16px;
+    font-size: 18px;
+}
+
+.metric {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 11px 0;
+}
+
+.metric span {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.metric strong {
+    text-align: right;
+    font-size: 13px;
+    color: #0f172a;
+}
+
+.logs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logs-header button {
+    border: none;
+    background: #f1f5f9;
+    border-radius: 999px;
+    padding: 7px 12px;
+    cursor: pointer;
+}
+
+.log-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 12px;
+    margin-bottom: 10px;
+    background: #f8fafc;
+}
+
+.log-item strong {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.log-item span {
+    display: block;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.muted {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+/* Responsive layout */
+@media (max-width: 1100px) {
+    .app-shell {
+        grid-template-columns: 260px minmax(0, 1fr);
+    }
+
+    .insights-panel {
+        display: none;
+    }
+}
+
+@media (max-width: 760px) {
+    .app-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .chat-area {
+        height: 100dvh;
+        padding: 14px;
+    }
+
+    .bubble {
+        max-width: 90%;
+    }
+
+    .chat-header {
+        padding: 18px 20px;
+        border-radius: 20px;
+    }
+
+    .chat-header h2 {
+        font-size: 22px;
+    }
+
+    .input-area {
+        border-radius: 18px;
+    }
+
+    .input-area button {
+        padding: 0 18px;
+    }
+}

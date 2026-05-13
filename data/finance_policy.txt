@@ -1,0 +1,7 @@
+Finance Policy Document
+
+Employees can submit reimbursement claims for travel, internet bills, food expenses, and client meeting expenses.
+Receipts are required for reimbursement claims.
+Finance Team or Admin can approve or reject reimbursement requests.
+Employees can view only their own reimbursement claims.
+High value reimbursement requests require human approval.
